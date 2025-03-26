@@ -10,37 +10,6 @@ Extract tables from PDFs (even borderless ones) with perfect accuracy - No Tabul
 - Exports to Excel with multiple sheets
 - Simple web interface
 
-Installation
-Prerequisites
-Python 3.7+
-
-pip package manage
-# Clone the repository
-git clone https://github.com/yourusername/pdf-table-extractor.git
-cd pdf-table-extractor
-
-# Create virtual environment (recommended)
-python -m venv venv
-
-# Activate environment
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-
-# Install dependencies
-pip install -flask
-pdfplumber
-pandas
-openpyxl
-python-dotenv
--> python app.py
-Start the application:
-
-Open your browser to:
-
-Upload a PDF file and download the extracted tables as Excel
-
 How It Works
 PDF Parsing: Uses pdfplumber to extract text with precise positioning
 
