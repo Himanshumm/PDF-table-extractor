@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Table Extractor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .upload-container {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #file-input {
+            display: none;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        #download-btn {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>PDF Table Extractor</h1>
+    <p>Upload a PDF file to extract tables and download them as an Excel file.</p>
+    
+    <div class="upload-container">
+        <input type="file" id="file-input" accept=".pdf">
+        <button class="btn" onclick="document.getElementById('file-input').click()">Choose PDF File</button>
+        <p id="file-name">No file chosen</p>
+        <button class="btn" id="upload-btn" disabled>Upload & Extract</button>
+    </div>
+    
+    <div id="status"></div>
+    
+    <a href="#" class="btn" id="download-btn">Download Excel File</a>
+    
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const fileName = document.getElementById('file-name');
+        const uploadBtn = document.getElementById('upload-btn');
+        const statusDiv = document.getElementById('status');
+        const downloadBtn = document.getElementById('download-btn');
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                fileName.textContent = e.target.files[0].name;
+                uploadBtn.disabled = false;
+            } else {
+                fileName.textContent = 'No file chosen';
+                uploadBtn.disabled = true;
+            }
+        });
+        
+        uploadBtn.addEventListener('click', async () => {
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            statusDiv.textContent = 'Processing...';
+            statusDiv.className = '';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    statusDiv.textContent = `Success! Extracted ${result.tables_count} tables.`;
+                    statusDiv.className = 'success';
+                    
+                    // Show download button
+                    downloadBtn.style.display = 'inline-block';
+                    downloadBtn.href = `/download/${result.excel_file}`;
+                    downloadBtn.download = result.excel_file;
+                } else {
+                    statusDiv.textContent = `Error: ${result.error || 'Unknown error'}`;
+                    statusDiv.className = 'error';
+                    downloadBtn.style.display = 'none';
+                }
+            } catch (error) {
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.className = 'error';
+                downloadBtn.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
