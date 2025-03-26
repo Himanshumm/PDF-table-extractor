@@ -25,8 +25,7 @@ python -m venv venv
 # Activate environment
 # On Windows:
 venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
+
 
 # Install dependencies
 pip install -flask
